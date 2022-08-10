@@ -281,7 +281,7 @@ def show_venue(venue_id):
   data = {
     "id": venue_id,
     "name": venue.name,
-    "genres": ",".split(venue.genres),
+    "genres": venue.genres.split(','),
     "address": venue.address,
     "city": venue.city,
     "state": venue.state,
@@ -348,7 +348,7 @@ def create_venue_submission():
       state=data['state'],
       address=data['address'],
       phone=data['phone'],
-      genres=','.join(data['genres']),
+      genres=data['genres'],
       facebook_link=data['facebook_link'],
       image_link=data['image_link'],
       website_link=data['website_link'],
@@ -520,7 +520,7 @@ def show_artist(artist_id):
   data = {
     "id": artist_id,
     "name": artist.name,
-    "genres": ",".split(artist.genres),
+    "genres": artist.genres.split(','),
     "city": artist.city,
     "state": artist.state,
     "phone": artist.phone,
@@ -798,10 +798,24 @@ def try_except(value, table, success_name = '', fail_name = ''):
     db.session.add(value)
     db.session.commit()
     flash(table + success_name + ' was successfully listed!')
-  except:
+  except Exception as e:
+    address = ''
+    if table == 'Venue ':
+      address = 'address'
     print(sys.exc_info())
     db.session.rollback()
-    flash('An error occurred. ' + table + fail_name + ' could not be listed.')
+    if "varying(120)" in str(sys.exc_info()):
+      #flash('An error occurred. ' + table + fail_name + f""" could not be listed. 
+      #  <p>Ensure your city, state, ' + {address} +', phone and facebook_link fields are no longer than 120 characters</p>""")
+      flash(f"""An error occurred. {table} {fail_name} could not be listed.
+        Hint:Ensure your city, state, {address}, phone and facebook_link fields are no longer than 120 characters""")
+    elif "varying(500)" in str(sys.exc_info()):
+      flash('An error occurred. ' + table + fail_name + ' could not be listed. Hint:Please ensure your image link is no longer than 500 characters')
+    elif table == 'Show ':
+      flash('An error occurred. ' + table + fail_name + ' could not be listed. Hint:Get your artist id from the artist\'s page and the venue id from the venue\'s page. Also ensure your time is in the format specified in the form.')
+    else:
+      flash('An error occurred. ' + table + fail_name + ' could not be listed. Your form is invalid')
+    print(e)
   finally:
     db.session.close()
 
