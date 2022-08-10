@@ -129,14 +129,14 @@ def venues():
         data[counter]['venues'].append({
               "id": info.id,
               "name": info.name,
-              "num_upcoming_shows": info.num_upcoming_shows
+              "num_upcoming_shows": upcoming(info, 'Venue')
             })
         counter += 1
       else:
         data[city_data[city.lower()]]['venues'].append({
               "id": info.id,
               "name": info.name,
-              "num_upcoming_shows": info.num_upcoming_shows
+              "num_upcoming_shows": upcoming(info, 'Venue')
             })
     
   """
@@ -177,7 +177,7 @@ def search_venues():
       response['data'].append({
         "id": i.id,
         "name": i.name,
-        "num_upcoming_shows": i.num_upcoming_shows
+        "num_upcoming_shows": upcoming(i)
       })
 
   """response={
@@ -422,7 +422,7 @@ def search_artists():
       response['data'].append({
         "id": i.id,
         "name": i.name,
-        "num_upcoming_shows": i.num_upcoming_shows
+        "num_upcoming_shows": upcoming(i, 'Artist')
       })
   """
   response={
@@ -510,7 +510,7 @@ def show_artist(artist_id):
     "past_shows_count": 0,
     "upcoming_shows_count": 3,
   }"""
-  artist = Venue.query.filter_by(id=artist_id).first()
+  artist = Artist.query.filter_by(id=artist_id).first()
   show = Show.query.filter_by(venue_id=artist_id)
   data = {
     "id": artist_id,
@@ -801,6 +801,18 @@ def try_except(value, table, success_name = '', fail_name = ''):
     flash('An error occurred. ' + table + fail_name + ' could not be listed.')
   finally:
     db.session.close()
+
+#Calculates the number of upcoming shows
+def upcoming(info, table):
+  num_upcoming_shows = 0
+  if table == 'Venue':
+    shows = Show.query.filter_by(venue_id=info.id).all()
+  else:
+    shows = Show.query.filter_by(artist_id=info.id).all()
+  for show in shows: 
+    if show.start_time > datetime.now():
+      num_upcoming_shows += 1
+  return num_upcoming_shows
 
 
 if not app.debug:
