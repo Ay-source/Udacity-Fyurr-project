@@ -180,7 +180,7 @@ def search_venues():
       response['data'].append({
         "id": i.id,
         "name": i.name,
-        "num_upcoming_shows": upcoming(i)[0]
+        "num_upcoming_shows": upcoming(i, 'Venue')[0]
       })
 
   """response={
