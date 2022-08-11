@@ -1,7 +1,15 @@
 var gen_array = []
 var parent_gens = document.querySelector("#genres")
-console.log(parent_gens)
 const gens = parent_gens.children
+for (let i = 0; i < gens.length; i++) {
+  let gen_ = gens[i]
+  let attributes = gen_.getAttributeNames()
+  if ('selected' == attributes[0])
+  {
+    gen_array.push(gen_.value)
+  }
+}
+
 for (let i = 0; i < gens.length; i++){
   let gen = gens[i]
   gen.onclick = function(e) {
@@ -14,6 +22,7 @@ for (let i = 0; i < gens.length; i++){
     }
     else
     {
+      console.log(gen)
       gen_array = []
       gen_array.push(gen.value)
     }
@@ -25,8 +34,7 @@ var form = document.querySelector('form')
 form.onsubmit = function(e) {
   var option = document.createElement('option');
   option.style.display = "none";
-  option.text = gen_array.toString();
+  option.text = gen_array;
   parent_gens.appendChild(option)
-  parent_gens.value = option.value
-  //e.preventDefault();
+  parent_gens.value = option.value;
 }
