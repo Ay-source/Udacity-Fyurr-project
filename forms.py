@@ -107,9 +107,9 @@ class VenueForm(Form):
                 return False
         if self.state.data not in dict(State.choices()).keys():
             return False
-        # if pass validation
         if not facebook(self.facebook_link.data):
             return False
+        # if pass validation
         return True
 
 
